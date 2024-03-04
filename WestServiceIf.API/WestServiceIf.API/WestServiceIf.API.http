@@ -1,0 +1,6 @@
+@WestServiceIf.API_HostAddress = http://localhost:5012
+
+GET {{WestServiceIf.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
