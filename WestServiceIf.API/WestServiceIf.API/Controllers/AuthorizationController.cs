@@ -20,4 +20,11 @@ public class AuthorizationController(SignInManager<IdentityUser> signInManager) 
 
         return Unauthorized("Invalid email or password");
     }
+
+    [HttpDelete("logout")]
+    public async Task<IActionResult> Logout()
+    {
+        Response.Cookies.Delete(".AspNetCore.Identity.Application");
+        return Ok();
+    }
 }
