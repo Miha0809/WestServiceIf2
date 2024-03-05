@@ -1,44 +1,95 @@
+using System.Reflection;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Filters;
+using WestServiceIf.API.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey
+    });
+    options.OperationFilter<SecurityRequirementsOperationFilter>();
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "West Service If",
+        Version = "v1",
+        Description = "An API to WSI for Vitalik",
+    });
+
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    options.IncludeXmlComments(xmlPath);
+});
+builder.Services.AddControllers();
+builder.Services.AddDbContext<WSIDbContext>(options =>
+{
+    options.UseLazyLoadingProxies()
+        .UseNpgsql(builder.Configuration.GetConnectionString("Host"));
+});
+builder.Services.AddCors();
+builder.Services.AddAuthorization();
+builder.Services.AddIdentityApiEndpoints<IdentityUser>(options =>
+    {
+        
+        options.SignIn.RequireConfirmedAccount = false;
+        options.User.RequireUniqueEmail = true;
+    })
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<WSIDbContext>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+app.UseCors(options =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    options.WithOrigins(
+            builder.Configuration.GetSection("FRONT_END_URLs:Host").Value!,
+            builder.Configuration.GetSection("FRONT_END_URLs:Local").Value!)
+        .AllowAnyHeader()
+        .AllowAnyOrigin()
+        .AllowAnyMethod();
+});
+
+// Configure the HTTP request pipeline.
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
+app.UseRouting();
 
-var summaries = new[]
+app.UseAuthorization();
+
+app.MapControllers();
+app.UseEndpoints(endpoints =>
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+    endpoints.MapControllers();
+});
 
-app.MapGet("/weatherforecast", () =>
+using (var scope = app.Services.CreateScope())
+{
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+    var email = "admin@admin.com";
+    var password = "Test1234,";
+
+    if (await userManager.FindByEmailAsync(email) is null)
     {
-        var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-            .ToArray();
-        return forecast;
-    })
-    .WithName("GetWeatherForecast")
-    .WithOpenApi();
+        var user = new IdentityUser
+        {
+            UserName = email,
+            Email = email
+        };
+        
+        await userManager.CreateAsync(user, password);
+    }
+}
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
