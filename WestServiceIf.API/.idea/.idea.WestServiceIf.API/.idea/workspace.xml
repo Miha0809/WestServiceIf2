@@ -8,18 +8,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fb0de473-1922-4d20-978f-1df28314c8a9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/WestServiceIf.API/Controllers/AuthorizationController.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WestServiceIf.API/Models/DTOs/LoginDto.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WestServiceIf.API/WestServiceIf.API.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/WestServiceIf.API/WestServiceIf.API.csproj" afterDir="false" />
-    </list>
+    <list default="true" id="fb0de473-1922-4d20-978f-1df28314c8a9" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="DarkyenusTimeTracker">
-    <option name="totalTimeSeconds" value="2495" />
+    <option name="totalTimeSeconds" value="2803" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
@@ -91,7 +87,7 @@
       <updated>1709542861241</updated>
       <workItem from="1709542863651" duration="684000" />
       <workItem from="1709552462973" duration="2782000" />
-      <workItem from="1709643480130" duration="307000" />
+      <workItem from="1709643480130" duration="615000" />
     </task>
     <servers />
   </component>

@@ -8,6 +8,11 @@ namespace WestServiceIf.API.Controllers;
 [Route("api/[controller]")]
 public class AuthorizationController(SignInManager<IdentityUser> signInManager) : Controller
 {
+    /// <summary>
+    /// Авторизація.
+    /// </summary>
+    /// <param name="login">Поля для авторизації.</param>
+    /// <returns></returns>
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginDto login)
     {
@@ -21,6 +26,10 @@ public class AuthorizationController(SignInManager<IdentityUser> signInManager) 
         return Unauthorized("Invalid email or password");
     }
 
+    /// <summary>
+    /// Вихід.
+    /// </summary>
+    /// <returns></returns>
     [HttpDelete("logout")]
     public async Task<IActionResult> Logout()
     {
